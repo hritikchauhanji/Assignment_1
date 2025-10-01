@@ -1,9 +1,11 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import passport from "passport";
 import authRoutes from "../src/routers/auth.routes.js";
 import dataRoutes from "../src/routers/data.routes.js";
 import { errorMiddleware } from "../src/middlewares/error.middleware.js";
+import "../src/middlewares/passport.middleware.js";
 
 const app = express();
 
@@ -18,6 +20,8 @@ app.use(express.json({ limit: "100kb" }));
 app.use(express.urlencoded({ extended: true, limit: "100kb" }));
 app.use(express.static("public"));
 app.use(cookieParser());
+// Initialize passport
+app.use(passport.initialize());
 
 //routes
 app.use("/api/v1/auth", authRoutes);

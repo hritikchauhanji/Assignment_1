@@ -4,10 +4,12 @@ import {
   loginUser,
   logoutUser,
   refreshAccessToken,
+  googleCallback,
 } from "../controllers/auth.controller.js";
 import { body } from "express-validator";
 import { validate } from "../validators/validate.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
+import passport from "passport";
 
 const router = Router();
 
@@ -40,5 +42,18 @@ router.post(
 router.route("/logout").post(verifyJWT, logoutUser);
 
 router.route("/refresh-token").post(refreshAccessToken);
+
+// Redirect user to Google for login
+router.get(
+  "/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+
+// Google callback
+router.get(
+  "/google/callback",
+  passport.authenticate("google", { failureRedirect: "/login" }),
+  googleCallback
+);
 
 export default router;

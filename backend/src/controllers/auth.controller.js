@@ -193,4 +193,39 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     );
 });
 
-export { registerUser, loginUser, logoutUser, refreshAccessToken };
+/**
+ * Handles Google OAuth callback
+ */
+const googleCallback = asyncHandler(async (req, res) => {
+  if (!req.user) {
+    throw new ApiError(401, "Google authentication failed");
+  }
+
+  const user = req.user;
+
+  // Generate JWT tokens
+  const { accessToken, refreshToken } =
+    await generateAccessTokenAndRefreshToken(user._id);
+
+  user.refreshToken = refreshToken;
+  await user.save({ validateBeforeSave: false });
+
+  const options = {
+    httpOnly: true,
+    secure: true, // set false for local development
+  };
+
+  // Send cookies and redirect to frontend dashboard
+  res
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, options)
+    .redirect("http://localhost:5000/dashboard"); // change to your frontend dashboard route
+});
+
+export {
+  registerUser,
+  loginUser,
+  logoutUser,
+  refreshAccessToken,
+  googleCallback,
+};
