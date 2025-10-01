@@ -5,11 +5,13 @@ export const errorMiddleware = (err, req, res, next) => {
     return res.status(err.statusCode).json({
       success: false,
       message: err.message,
-      errors: err.errors,
+      errors: err.errors || [], // include field-level errors if any
     });
   }
+
   return res.status(500).json({
     success: false,
     message: err.message || "Internal Server Error",
+    errors: [],
   });
 };
