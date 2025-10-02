@@ -20,22 +20,26 @@ dotenv.config(); // default .env or Vercel environment variables
 //   });
 
 // for vercel
+
 let isConnected = false;
+
 const connect = async () => {
   if (!isConnected) {
     try {
       await connectDB();
       isConnected = true;
+      console.log("MongoDB connected!");
     } catch (err) {
       console.error("MongoDB connection failed:", err);
-      // Vercel will return 500 automatically
+      throw err;
     }
   }
 };
 
-// Wrap handler to connect DB before handling any request
+const serverlessHandler = serverless(app);
+
+// Export Vercel serverless function
 export const handler = async (req, res) => {
-  await connectDB(); // ensure DB is connected
-  const serverlessHandler = serverless(app);
+  await connect(); // safe wrapper, no duplicate connects
   return serverlessHandler(req, res);
 };
