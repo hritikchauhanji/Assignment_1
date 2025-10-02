@@ -9,6 +9,16 @@ export const getDataRows = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, rows, "Get all data of user."));
 });
 
+// Get single row by ID
+export const getDataRowById = asyncHandler(async (req, res) => {
+  const row = await DataRow.findOne({
+    _id: req.params.id,
+    createdBy: req.userId,
+  });
+  if (!row) throw new ApiError(404, "User data not found");
+  res.status(200).json(new ApiResponse(200, row, "User data fetched"));
+});
+
 // Add row
 export const addDataRow = asyncHandler(async (req, res) => {
   const row = await DataRow.create({ ...req.body, createdBy: req.userId });

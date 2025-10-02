@@ -193,9 +193,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     );
 });
 
-/**
- * Handles Google OAuth callback
- */
+// Handles Google OAuth callback
 const googleCallback = asyncHandler(async (req, res) => {
   if (!req.user) {
     throw new ApiError(401, "Google authentication failed");
@@ -212,14 +210,24 @@ const googleCallback = asyncHandler(async (req, res) => {
 
   const options = {
     httpOnly: true,
-    secure: true, // set false for local development
+    secure: false, // ❌ set to false for local development with Postman
   };
 
-  // Send cookies and redirect to frontend dashboard
-  res
+  // ✅ Instead of redirecting, return JSON so you can test in Postman
+  return res
     .cookie("accessToken", accessToken, options)
     .cookie("refreshToken", refreshToken, options)
-    .redirect("http://localhost:5000/dashboard"); // change to your frontend dashboard route
+    .json({
+      success: true,
+      message: "Google login successful",
+      user: {
+        id: user._id,
+        email: user.email,
+        username: user.username,
+      },
+      accessToken,
+      refreshToken,
+    });
 });
 
 export {

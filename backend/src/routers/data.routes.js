@@ -4,6 +4,7 @@ import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { validate } from "../validators/validate.js";
 import {
   getDataRows,
+  getDataRowById,
   addDataRow,
   updateDataRow,
   deleteDataRow,
@@ -19,6 +20,13 @@ const phoneRegex = /^[0-9]{10}$/; // 10 digit number
 
 // Get all rows
 router.get("/", getDataRows);
+
+// Get single row by ID
+router.get(
+  "/:id",
+  [param("id").isMongoId().withMessage("Invalid row ID"), validate],
+  getDataRowById
+);
 
 // Add row (all fields required)
 router.post(
