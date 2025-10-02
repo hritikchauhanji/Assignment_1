@@ -35,3 +35,15 @@ export const bulkDeleteDataRows = async (ids) => {
   const res = await axiosInstance.post("/data/bulk-delete", { ids });
   return res.data;
 };
+
+export const getDataRowsWithSortingAndPagination = async (
+  page = 1,
+  limit = 10,
+  sortColumn = "name",
+  sortDirection = "asc"
+) => {
+  const res = await axiosInstance.get("/data", {
+    params: { page, limit, sortColumn, sortDirection },
+  });
+  return res.data;
+};

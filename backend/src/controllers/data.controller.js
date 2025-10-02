@@ -52,3 +52,36 @@ export const bulkDeleteDataRow = asyncHandler(async (req, res) => {
   await DataRow.deleteMany({ _id: { $in: ids }, createdBy: req.userId });
   res.status(200).json(new ApiResponse(200, null, "Users data deleted"));
 });
+
+// Get all rows for logged-in user with pagination & sorting
+export const getDataRowsWithSortingAndPagination = asyncHandler(
+  async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const sortColumn = req.query.sortColumn || "name";
+    const sortDirection = req.query.sortDirection === "desc" ? -1 : 1;
+
+    const skip = (page - 1) * limit;
+
+    const total = await DataRow.countDocuments({ createdBy: req.userId });
+
+    const rows = await DataRow.find({ createdBy: req.userId })
+      .sort({ [sortColumn]: sortDirection })
+      .skip(skip)
+      .limit(limit);
+
+    res.status(200).json(
+      new ApiResponse(
+        200,
+        {
+          rows,
+          page,
+          limit,
+          totalPages: Math.ceil(total / limit),
+          totalRows: total,
+        },
+        "Get paginated and sorted data of user."
+      )
+    );
+  }
+);

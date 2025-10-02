@@ -9,6 +9,7 @@ import {
   updateDataRow,
   deleteDataRow,
   bulkDeleteDataRow,
+  getDataRowsWithSortingAndPagination,
 } from "../controllers/data.controller.js";
 
 const router = Router();
@@ -19,7 +20,10 @@ const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const phoneRegex = /^[0-9]{10}$/; // 10 digit number
 
 // Get all rows
-router.get("/", getDataRows);
+// router.get("/", getDataRows);
+
+// Get all rows with pagination & sorting
+router.get("/", getDataRowsWithSortingAndPagination);
 
 // Get single row by ID
 router.get(

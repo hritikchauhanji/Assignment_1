@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import {
-  getDataRows,
+  //   getDataRows,
   deleteDataRow,
   bulkDeleteDataRows,
+  getDataRowsWithSortingAndPagination,
 } from "../api/dataService";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../api/authService";
@@ -11,13 +12,26 @@ const Dashboard = () => {
   const [rows, setRows] = useState([]);
   const [selectedIds, setSelectedIds] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [limit] = useState(3);
+  const [sortColumn, setSortColumn] = useState("name");
+  const [sortDirection, setSortDirection] = useState("asc");
+  const [totalPages, setTotalPages] = useState(1);
+
   const navigate = useNavigate();
 
+  // Fetch rows with pagination and sorting
   const fetchRows = async () => {
     setLoading(true);
     try {
-      const res = await getDataRows();
-      setRows(res.data);
+      const res = await getDataRowsWithSortingAndPagination(
+        page,
+        limit,
+        sortColumn,
+        sortDirection
+      );
+      setRows(res.data.rows);
+      setTotalPages(res.data.totalPages);
     } catch (err) {
       console.error(err);
     } finally {
@@ -27,7 +41,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchRows();
-  }, []);
+  }, [page, sortColumn, sortDirection]);
 
   const handleSelect = (id) => {
     if (selectedIds.includes(id)) {
@@ -56,6 +70,15 @@ const Dashboard = () => {
       navigate("/login");
     } catch (err) {
       console.error("Logout failed:", err);
+    }
+  };
+
+  const handleSort = (column) => {
+    if (sortColumn === column) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortColumn(column);
+      setSortDirection("asc");
     }
   };
 
@@ -97,11 +120,22 @@ const Dashboard = () => {
             <thead className="bg-purple-500 text-white">
               <tr>
                 <th className="px-4 py-2">Select</th>
-                <th className="px-4 py-2">Name</th>
-                <th className="px-4 py-2">Email</th>
-                <th className="px-4 py-2">Phone</th>
-                <th className="px-4 py-2">Age</th>
-                <th className="px-4 py-2">Father's Number</th>
+                {["name", "email", "phoneNumber", "age", "fathersNumber"].map(
+                  (col) => (
+                    <th
+                      key={col}
+                      className="px-4 py-2 cursor-pointer"
+                      onClick={() => handleSort(col)}
+                    >
+                      {col.charAt(0).toUpperCase() + col.slice(1)}{" "}
+                      {sortColumn === col
+                        ? sortDirection === "asc"
+                          ? "↑"
+                          : "↓"
+                        : ""}
+                    </th>
+                  )
+                )}
                 <th className="px-4 py-2">Action</th>
               </tr>
             </thead>
@@ -148,6 +182,27 @@ const Dashboard = () => {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Pagination */}
+        <div className="flex justify-center gap-2 mt-4">
+          <button
+            disabled={page === 1}
+            onClick={() => setPage(page - 1)}
+            className="px-4 py-2 bg-gray-700 rounded disabled:opacity-50"
+          >
+            Prev
+          </button>
+          <span className="px-4 py-2">
+            {page} / {totalPages}
+          </span>
+          <button
+            disabled={page === totalPages}
+            onClick={() => setPage(page + 1)}
+            className="px-4 py-2 bg-gray-700 rounded disabled:opacity-50"
+          >
+            Next
+          </button>
         </div>
       </div>
     </div>
