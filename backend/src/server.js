@@ -9,15 +9,17 @@ import serverless from "serverless-http";
 
 dotenv.config(); // default .env or Vercel environment variables
 
-// connectDB()
-//   .then(() => {
-//     app.listen(process.env.PORT || 8000, () => {
-//       console.log(`Server is running at port : ${process.env.PORT}`);
-//     });
-//   })
-//   .catch((err) => {
-//     console.log("MONGO db connection failed !!! ", err);
-//   });
+if (process.env.NODE_ENV !== "production") {
+  connectDB()
+    .then(() => {
+      app.listen(process.env.PORT || 8000, () => {
+        console.log(`Server is running at port : ${process.env.PORT}`);
+      });
+    })
+    .catch((err) => {
+      console.log("MONGO db connection failed !!! ", err);
+    });
+}
 
 let dbConnected = false;
 
@@ -34,7 +36,7 @@ const expressHandler = serverless(app);
 export default async function handler(req, res) {
   try {
     await ensureDB();
-    return expressHandler(req, res);
+    return await expressHandler(req, res);
   } catch (err) {
     console.error("Handler error:", err);
     res.status(500).json({ error: "Internal Server Error" });
