@@ -3,12 +3,11 @@ import connectDB from "./db/index.js";
 import { app } from "./app.js";
 import serverless from "serverless-http";
 
-dotenv.config({
-  path: "./env",
-});
+// dotenv.config({
+//   path: "./env",
+// });
 
-// Export handler for Vercel
-export const handler = serverless(app);
+dotenv.config(); // default .env or Vercel environment variables
 
 // connectDB()
 //   .then(() => {
@@ -22,12 +21,21 @@ export const handler = serverless(app);
 
 // for vercel
 let isConnected = false;
+const connect = async () => {
+  if (!isConnected) {
+    try {
+      await connectDB();
+      isConnected = true;
+    } catch (err) {
+      console.error("MongoDB connection failed:", err);
+      // Vercel will return 500 automatically
+    }
+  }
+};
 
-connectDB()
-  .then(() => {
-    isConnected = true;
-    console.log("MongoDB connected successfully!");
-  })
-  .catch((err) => {
-    console.error("MongoDB connection failed:", err);
-  });
+// Wrap handler to connect DB before handling any request
+export const handler = async (req, res) => {
+  await connectDB(); // ensure DB is connected
+  const serverlessHandler = serverless(app);
+  return serverlessHandler(req, res);
+};
