@@ -1,17 +1,33 @@
 import dotenv from "dotenv";
 import connectDB from "./db/index.js";
 import { app } from "./app.js";
+import serverless from "serverless-http";
 
 dotenv.config({
   path: "./env",
 });
 
+// Export handler for Vercel
+export const handler = serverless(app);
+
+// connectDB()
+//   .then(() => {
+//     app.listen(process.env.PORT || 8000, () => {
+//       console.log(`Server is running at port : ${process.env.PORT}`);
+//     });
+//   })
+//   .catch((err) => {
+//     console.log("MONGO db connection failed !!! ", err);
+//   });
+
+// for vercel
+let isConnected = false;
+
 connectDB()
   .then(() => {
-    app.listen(process.env.PORT || 8000, () => {
-      console.log(`Server is running at port : ${process.env.PORT}`);
-    });
+    isConnected = true;
+    console.log("MongoDB connected successfully!");
   })
   .catch((err) => {
-    console.log("MONGO db connection failed !!! ", err);
+    console.error("MongoDB connection failed:", err);
   });

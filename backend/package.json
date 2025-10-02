@@ -5,7 +5,8 @@
   "type": "module",
   "main": "src/server.js",
   "scripts": {
-    "dev": "nodemon -r dotenv/config --experimental-json-modules src/server.js"
+    "dev": "nodemon -r dotenv/config --experimental-json-modules src/server.js",
+    "vercel-start": "node src/server.js"
   },
   "keywords": [
     "javascript",
@@ -29,6 +30,7 @@
     "mongodb": "^6.20.0",
     "mongoose": "^8.18.3",
     "passport": "^0.7.0",
-    "passport-google-oauth20": "^2.0.0"
+    "passport-google-oauth20": "^2.0.0",
+    "serverless-http": "^4.0.0"
   }
 }
