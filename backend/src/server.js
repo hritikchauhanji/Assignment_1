@@ -19,6 +19,18 @@ dotenv.config(); // default .env or Vercel environment variables
 //     console.log("MONGO db connection failed !!! ", err);
 //   });
 
-await connectDB();
+let dbConnected = false;
 
-export const handler = serverless(app);
+const ensureDB = async () => {
+  if (!dbConnected) {
+    await connectDB();
+    dbConnected = true;
+  }
+};
+
+// Default export must be a function (req, res)
+export default async function handler(req, res) {
+  await ensureDB();
+  const expressHandler = serverless(app);
+  return expressHandler(req, res);
+}
