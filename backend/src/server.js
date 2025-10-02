@@ -28,9 +28,15 @@ const ensureDB = async () => {
   }
 };
 
-// Default export must be a function (req, res)
+// serverless-http expects us to export a function
+const expressHandler = serverless(app);
+
 export default async function handler(req, res) {
-  await ensureDB();
-  const expressHandler = serverless(app);
-  return expressHandler(req, res);
+  try {
+    await ensureDB();
+    return expressHandler(req, res);
+  } catch (err) {
+    console.error("Handler error:", err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 }
