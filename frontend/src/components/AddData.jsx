@@ -12,16 +12,20 @@ const AddRow = () => {
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [errors, setErrors] = useState({}); // <-- field-level errors
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    setErrors({ ...errors, [e.target.name]: "" }); // clear field error on change
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setMessage("");
+    setErrors({});
+
     try {
       await addDataRow(form);
       setMessage("✅ Data added successfully!");
@@ -32,10 +36,19 @@ const AddRow = () => {
         fathersNumber: "",
         age: "",
       });
-      // Navigate back to dashboard after 1 sec
       setTimeout(() => navigate("/dashboard"), 1000);
     } catch (err) {
-      setMessage(err.response?.data?.message || "❌ Something went wrong.");
+      const resErrors = err.response?.data?.errors;
+      if (resErrors && Array.isArray(resErrors)) {
+        // convert backend array to object for per-field errors
+        const fieldErrors = resErrors.reduce((acc, curr) => {
+          acc[curr.field] = curr.message;
+          return acc;
+        }, {});
+        setErrors(fieldErrors);
+      } else {
+        setMessage(err.response?.data?.message || "❌ Something went wrong.");
+      }
     } finally {
       setLoading(false);
     }
@@ -47,52 +60,89 @@ const AddRow = () => {
         <h2 className="text-3xl font-bold text-white text-center mb-6">
           Add New Data
         </h2>
+
         {message && (
-          <div className="mb-4 text-center text-sm text-green-400">
+          <div
+            className={`mb-4 text-center text-sm ${
+              message.startsWith("✅") ? "text-green-400" : "text-red-400"
+            }`}
+          >
             {message}
           </div>
         )}
+
         <form onSubmit={handleSubmit} className="space-y-5">
-          <input
-            name="name"
-            value={form.name}
-            onChange={handleChange}
-            placeholder="Name"
-            required
-            className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700"
-          />
-          <input
-            name="email"
-            value={form.email}
-            onChange={handleChange}
-            placeholder="Email"
-            required
-            className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700"
-          />
-          <input
-            name="phoneNumber"
-            value={form.phoneNumber}
-            onChange={handleChange}
-            placeholder="Phone Number"
-            required
-            className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700"
-          />
-          <input
-            name="fathersNumber"
-            value={form.fathersNumber}
-            onChange={handleChange}
-            placeholder="Father's Number"
-            required
-            className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700"
-          />
-          <input
-            name="age"
-            value={form.age}
-            onChange={handleChange}
-            placeholder="Age"
-            required
-            className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700"
-          />
+          {/* Name */}
+          <div>
+            <input
+              name="name"
+              value={form.name}
+              onChange={handleChange}
+              placeholder="Name"
+              className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700"
+            />
+            {errors.name && (
+              <p className="text-red-500 text-xs mt-1">{errors.name}</p>
+            )}
+          </div>
+
+          {/* Email */}
+          <div>
+            <input
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              placeholder="Email"
+              className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700"
+            />
+            {errors.email && (
+              <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+            )}
+          </div>
+
+          {/* Phone Number */}
+          <div>
+            <input
+              name="phoneNumber"
+              value={form.phoneNumber}
+              onChange={handleChange}
+              placeholder="Phone Number"
+              className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700"
+            />
+            {errors.phoneNumber && (
+              <p className="text-red-500 text-xs mt-1">{errors.phoneNumber}</p>
+            )}
+          </div>
+
+          {/* Father's Number */}
+          <div>
+            <input
+              name="fathersNumber"
+              value={form.fathersNumber}
+              onChange={handleChange}
+              placeholder="Father's Number"
+              className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700"
+            />
+            {errors.fathersNumber && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.fathersNumber}
+              </p>
+            )}
+          </div>
+
+          {/* Age */}
+          <div>
+            <input
+              name="age"
+              value={form.age}
+              onChange={handleChange}
+              placeholder="Age"
+              className="w-full px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700"
+            />
+            {errors.age && (
+              <p className="text-red-500 text-xs mt-1">{errors.age}</p>
+            )}
+          </div>
 
           {/* Buttons */}
           <div className="flex gap-4">

@@ -19,7 +19,7 @@ router.post(
     body("username")
       .isLength({ min: 3 })
       .withMessage("Username must be at least 3 characters long"),
-    body("email").isEmail().withMessage("Correct your mail"),
+    body("email").isEmail().withMessage("Email format: abcd@example.com"),
     body("password")
       .matches(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
@@ -34,7 +34,10 @@ router.post(
 
 router.post(
   "/login",
-  [body("email").isEmail().withMessage("Correct your mail"), body("password")],
+  [
+    body("email").isEmail().withMessage("Email format: abcd@example.com"),
+    body("password"),
+  ],
   validate,
   loginUser
 );

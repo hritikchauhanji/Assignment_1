@@ -1,5 +1,4 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { register } from "../api/authService";
 
 const Register = () => {
@@ -10,22 +9,35 @@ const Register = () => {
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [errors, setErrors] = useState({}); // <-- field errors
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    setErrors({ ...errors, [e.target.name]: "" }); // clear field error on change
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setMessage("");
+    setErrors({});
+
     try {
       const res = await register(form);
       setMessage("✅ Registration successful! You can now log in.");
-      console.log(res.data);
       setForm({ username: "", email: "", password: "" });
     } catch (err) {
-      setMessage(err.response?.data?.message || "❌ Something went wrong.");
+      const resErrors = err.response?.data?.errors;
+      if (resErrors && Array.isArray(resErrors)) {
+        // Convert backend array to object for per-field errors
+        const fieldErrors = resErrors.reduce((acc, curr) => {
+          acc[curr.field] = curr.message;
+          return acc;
+        }, {});
+        setErrors(fieldErrors);
+      } else {
+        setMessage(err.response?.data?.message || "❌ Something went wrong.");
+      }
     } finally {
       setLoading(false);
     }
@@ -38,9 +50,16 @@ const Register = () => {
           Create Account
         </h2>
         {message && (
-          <div className="mb-4 text-center text-sm text-red-400">{message}</div>
+          <div
+            className={`mb-4 text-center text-sm ${
+              message.startsWith("✅") ? "text-green-400" : "text-red-400"
+            }`}
+          >
+            {message}
+          </div>
         )}
         <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Username */}
           <div>
             <label className="block text-sm text-gray-300">Username</label>
             <input
@@ -48,23 +67,31 @@ const Register = () => {
               name="username"
               value={form.username}
               onChange={handleChange}
-              required
               className="w-full mt-1 px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
               placeholder="Enter your username"
             />
+            {errors.username && (
+              <p className="text-red-500 text-xs mt-1">{errors.username}</p>
+            )}
           </div>
+
+          {/* Email */}
           <div>
             <label className="block text-sm text-gray-300">Email</label>
             <input
-              type="email"
+              type="text"
               name="email"
               value={form.email}
               onChange={handleChange}
-              required
               className="w-full mt-1 px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
               placeholder="you@example.com"
             />
+            {errors.email && (
+              <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+            )}
           </div>
+
+          {/* Password */}
           <div>
             <label className="block text-sm text-gray-300">Password</label>
             <input
@@ -72,11 +99,15 @@ const Register = () => {
               name="password"
               value={form.password}
               onChange={handleChange}
-              required
               className="w-full mt-1 px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
               placeholder="••••••••"
             />
+            {errors.password && (
+              <p className="text-red-500 text-xs mt-1">{errors.password}</p>
+            )}
           </div>
+
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}
@@ -85,6 +116,7 @@ const Register = () => {
             {loading ? "Registering..." : "Register"}
           </button>
         </form>
+
         <p className="mt-6 text-gray-400 text-sm text-center">
           Already have an account?{" "}
           <a
