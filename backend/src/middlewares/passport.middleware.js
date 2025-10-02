@@ -7,28 +7,36 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: process.env.GOOGLE_CLIENT_URL,
+      callbackURL: process.env.GOOGLE_CALLBACK_URL, // e.g., http://localhost:3000/api/v1/auth/google/callback
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-        let user = await User.findOne({ email: profile.emails[0].value });
+        // Look for user by googleId first
+        let user = await User.findOne({ googleId: profile.id });
+
+        // If user not found, check by email
+        if (!user) {
+          user = await User.findOne({ email: profile.emails[0].value });
+        }
+
+        // If still not found, create a new user
         if (!user) {
           user = await User.create({
             username: profile.displayName,
             email: profile.emails[0].value,
-            password: "", // optional for Google login
+            googleId: profile.id,
+            password: "", // optional, Google login doesn't need password
           });
+        } else if (!user.googleId) {
+          // If user exists but has no googleId, save it
+          user.googleId = profile.id;
+          await user.save({ validateBeforeSave: false });
         }
-        done(null, user);
+
+        done(null, user); // Pass user to the callback
       } catch (err) {
         done(err, null);
       }
     }
   )
 );
-
-passport.serializeUser((user, done) => done(null, user._id));
-passport.deserializeUser(async (id, done) => {
-  const user = await User.findById(id).select("-password -refreshToken");
-  done(null, user);
-});

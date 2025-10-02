@@ -1,12 +1,23 @@
-import { useDispatch, useSelector } from "react-redux";
-import { loginUser, logout } from "../redux/slices/authSlice";
+import axiosInstance from "../api/axiosInstance"; // adjust the path if needed
+import { useEffect, useState } from "react";
 
 export const useAuth = () => {
-  const dispatch = useDispatch();
-  const { user, status } = useSelector((state) => state.auth);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const login = (data) => dispatch(loginUser(data));
-  const logoutUser = () => dispatch(logout());
+  useEffect(() => {
+    const checkLogin = async () => {
+      try {
+        await axiosInstance.get("/auth/me"); // calls backend
+        setIsLoggedIn(true);
+      } catch (err) {
+        setIsLoggedIn(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+    checkLogin();
+  }, []);
 
-  return { user, status, login, logoutUser };
+  return { isLoggedIn, loading };
 };

@@ -198,18 +198,14 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
 // Handles Google OAuth callback
 const googleCallback = asyncHandler(async (req, res) => {
-  if (!req.user) {
-    throw new ApiError(401, "Google authentication failed");
-  }
+  if (!req.user) throw new ApiError(401, "Google authentication failed");
 
   const user = req.user;
+  console.log("User Google: ", user);
 
-  // Generate JWT tokens
+  // Generate tokens
   const { accessToken, refreshToken } =
     await generateAccessTokenAndRefreshToken(user._id);
-
-  user.refreshToken = refreshToken;
-  await user.save({ validateBeforeSave: false });
 
   const options = {
     httpOnly: true,
@@ -217,21 +213,34 @@ const googleCallback = asyncHandler(async (req, res) => {
     sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
   };
 
-  // ✅ Instead of redirecting, return JSON so you can test in Postman
-  return res
+  // Save refresh token in DB
+  user.refreshToken = refreshToken;
+  await user.save({ validateBeforeSave: false });
+
+  // Redirect to frontend dashboard
+  res
     .cookie("accessToken", accessToken, options)
     .cookie("refreshToken", refreshToken, options)
-    .json({
-      success: true,
-      message: "Google login successful",
-      user: {
-        id: user._id,
-        email: user.email,
-        username: user.username,
-      },
-      accessToken,
-      refreshToken,
-    });
+    .redirect(`${process.env.CORS_ORIGIN}/dashboard`);
+});
+
+const getCurrentUser = asyncHandler(async (req, res) => {
+  const accessToken = req.cookies.accessToken;
+  if (!accessToken) {
+    throw new ApiError(401, "Not logged in");
+  }
+
+  // Verify token
+  const decoded = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET);
+  const user = await User.findById(decoded._id).select(
+    "-password -refreshToken"
+  );
+
+  if (!user) {
+    throw new ApiError(401, "User not found");
+  }
+
+  res.status(200).json(new ApiResponse(200, user, "User logged in"));
 });
 
 export {
@@ -240,4 +249,5 @@ export {
   logoutUser,
   refreshAccessToken,
   googleCallback,
+  getCurrentUser,
 };

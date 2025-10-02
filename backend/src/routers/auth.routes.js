@@ -5,6 +5,7 @@ import {
   logoutUser,
   refreshAccessToken,
   googleCallback,
+  getCurrentUser,
 } from "../controllers/auth.controller.js";
 import { body } from "express-validator";
 import { validate } from "../validators/validate.js";
@@ -46,17 +47,22 @@ router.route("/logout").post(verifyJWT, logoutUser);
 
 router.route("/refresh-token").post(refreshAccessToken);
 
-// Redirect user to Google for login
+// auth.routes.js
 router.get(
   "/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
-// Google callback
 router.get(
   "/google/callback",
-  passport.authenticate("google", { failureRedirect: "/login" }),
+  passport.authenticate("google", {
+    failureRedirect: "/login",
+    session: false,
+  }),
   googleCallback
 );
+
+// Route to get current logged-in user
+router.get("/me", verifyJWT, getCurrentUser);
 
 export default router;
