@@ -105,7 +105,8 @@ const loginUser = asyncHandler(async (req, res) => {
 
   const options = {
     httpOnly: true,
-    secure: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
   };
 
   return res
@@ -139,7 +140,8 @@ const logoutUser = asyncHandler(async (req, res) => {
 
   const options = {
     httpOnly: true,
-    secure: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
   };
 
   return res
@@ -168,7 +170,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     throw new ApiError(401, "Invalid Refresh Token");
   }
 
-  if (incomingRefreshToken != user?.refreshToken) {
+  if (incomingRefreshToken !== user?.refreshToken) {
     throw new ApiError("Refreshed token is expired or used");
   }
 
@@ -177,7 +179,8 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
   const options = {
     httpOnly: true,
-    secure: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
   };
 
   return res
@@ -210,7 +213,8 @@ const googleCallback = asyncHandler(async (req, res) => {
 
   const options = {
     httpOnly: true,
-    secure: false, // ❌ set to false for local development with Postman
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
   };
 
   // ✅ Instead of redirecting, return JSON so you can test in Postman

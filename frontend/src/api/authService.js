@@ -1,6 +1,6 @@
 import axiosInstance from "./axiosInstance";
 
-// ✅ Login
+// Login
 export const login = async (data) => {
   const res = await axiosInstance.post("/auth/login", data, {
     withCredentials: true, // important to store httpOnly cookies
@@ -10,7 +10,7 @@ export const login = async (data) => {
   return res.data;
 };
 
-// ✅ Register
+// Register
 export const register = async (data) => {
   const res = await axiosInstance.post("/auth/register", data, {
     withCredentials: true,
@@ -18,13 +18,13 @@ export const register = async (data) => {
   return res.data;
 };
 
-// ✅ Logout
+// Logout
 export const logout = async () => {
   await axiosInstance.post("/auth/logout", {}, { withCredentials: true });
   localStorage.removeItem("isLoggedIn"); // clear login state
 };
 
-// ✅ Get current user (optional helper)
+// Get current user (optional helper)
 export const getCurrentUser = async () => {
   const res = await axiosInstance.get("/auth/me", { withCredentials: true });
   return res.data;
