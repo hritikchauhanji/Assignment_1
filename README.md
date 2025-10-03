@@ -129,30 +129,29 @@ npm run dev
 
 # 🔑 API Endpoints
 
-```Auth
+```
+Auth:
 
-POST /api/auth/register → Register user
+POST /api/v1/auth/register → Register user
 
-POST /api/auth/login → Login with email/password
+POST /api/v1/auth/login → Login with email/password
 
-POST /api/auth/google → Login with Google (id_token verification)
+POST /api/v1/auth/google → Login with Google (id_token verification)
 
-Users
+Data:
 
-GET /api/users?page=&limit=&sortBy=&order= → List users with pagination/sorting
+POST /api/v1/data -> Create data
 
-PUT /api/users/:id → Update user
+GET /api/v1/data/?page=1&limit=2&sortColumn=age&sortDirection=asc → List of data with pagination/sorting
 
-DELETE /api/users/:id → Delete user
+PUT /api/v1/data/:id → Update data
 
-POST /api/users/bulk-delete → Bulk delete users
+DELETE /api/v1/data/:id → Delete data
+
+POST /api/v1/data/bulk-delete → Bulk delete data
 ```
 
 # 👨‍💻 Hritik Chauhan
 
 Developed as part of an assignment project.
 Tech stack: React.js + Node.js + MongoDB
-
----
-
-Do you want me to **include actual screenshots & sample `.env` values** in the `README.md` (so it looks submission-ready), or should I leave it clean for you to add later?
