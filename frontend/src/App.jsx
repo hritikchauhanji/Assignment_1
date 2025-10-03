@@ -13,10 +13,13 @@ import PublicRoute from "./routes/PublicRoute";
 import AddRow from "./components/AddData";
 import EditData from "./components/EditData";
 import GoogleSuccess from "./pages/GoogleSuccess";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
     <Router>
+      <ToastContainer position="top-right" autoClose={3000} />
       <Routes>
         {/* Default redirect */}
         <Route path="/" element={<Navigate to="/login" />} />

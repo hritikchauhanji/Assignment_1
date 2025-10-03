@@ -13,20 +13,30 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    // 🚨 If login/register/google fails, don't attempt refresh
+    if (
+      originalRequest.url.includes("/auth/login") ||
+      originalRequest.url.includes("/auth/register") ||
+      originalRequest.url.includes("/auth/google")
+    ) {
+      return Promise.reject(error);
+    }
+
+    // ✅ Handle token refresh only for protected routes
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       try {
-        // call refresh endpoint with plain axios
+        // Call refresh endpoint with plain axios
         await axios.post(
           `${BaseUrl}/api/v1/auth/refresh-token`,
           {},
           { withCredentials: true }
         );
 
-        // mark user as logged in
+        // keep user logged in
         localStorage.setItem("isLoggedIn", "true");
 
-        // retry original request
+        // Retry original request
         return axiosInstance(originalRequest);
       } catch (refreshError) {
         localStorage.removeItem("isLoggedIn");

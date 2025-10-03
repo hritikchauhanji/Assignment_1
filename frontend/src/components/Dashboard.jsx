@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import {
-  //   getDataRows,
   deleteDataRow,
   bulkDeleteDataRows,
   getDataRowsWithSortingAndPagination,
 } from "../api/dataService";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../api/authService";
+import { toast } from "react-toastify"; // <-- import toast
 
 const Dashboard = () => {
   const [rows, setRows] = useState([]);
@@ -20,7 +20,6 @@ const Dashboard = () => {
 
   const navigate = useNavigate();
 
-  // Fetch rows with pagination and sorting
   const fetchRows = async () => {
     setLoading(true);
     try {
@@ -34,6 +33,7 @@ const Dashboard = () => {
       setTotalPages(res.data.totalPages);
     } catch (err) {
       console.error(err);
+      toast.error("❌ Failed to fetch data.");
     } finally {
       setLoading(false);
     }
@@ -52,24 +52,41 @@ const Dashboard = () => {
   };
 
   const handleDelete = async (id) => {
-    await deleteDataRow(id);
-    fetchRows();
+    try {
+      await deleteDataRow(id);
+      toast.success("✅ Row deleted successfully!");
+      fetchRows();
+    } catch (err) {
+      console.error(err);
+      toast.error("❌ Failed to delete row.");
+    }
   };
 
   const handleBulkDelete = async () => {
-    if (selectedIds.length === 0) return;
-    await bulkDeleteDataRows(selectedIds);
-    setSelectedIds([]);
-    fetchRows();
+    if (selectedIds.length === 0) {
+      toast.info("⚠️ No rows selected for deletion.");
+      return;
+    }
+    try {
+      await bulkDeleteDataRows(selectedIds);
+      toast.success(`✅ ${selectedIds.length} row(s) deleted!`);
+      setSelectedIds([]);
+      fetchRows();
+    } catch (err) {
+      console.error(err);
+      toast.error("❌ Failed to delete selected rows.");
+    }
   };
 
   const handleLogout = async () => {
     try {
       await logout();
       localStorage.removeItem("isLoggedIn");
+      toast.success("✅ Logged out successfully!");
       navigate("/login");
     } catch (err) {
-      console.error("Logout failed:", err);
+      console.error(err);
+      toast.error("❌ Logout failed.");
     }
   };
 
@@ -95,7 +112,6 @@ const Dashboard = () => {
           </button>
         </div>
 
-        {/* Add New + Bulk Delete */}
         <div className="flex justify-between mb-2 items-center">
           <button
             onClick={() => navigate("/add")}
@@ -114,7 +130,6 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Table */}
         <div className="overflow-x-auto bg-gray-900 rounded-xl">
           <table className="min-w-full">
             <thead className="bg-purple-500 text-white">
@@ -184,7 +199,6 @@ const Dashboard = () => {
           </table>
         </div>
 
-        {/* Pagination */}
         <div className="flex justify-center gap-2 mt-4">
           <button
             disabled={page === 1}

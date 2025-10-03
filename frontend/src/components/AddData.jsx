@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { addDataRow } from "../api/dataService";
+import { toast } from "react-toastify"; // <-- import toast
 
 const AddRow = () => {
   const [form, setForm] = useState({
@@ -11,7 +12,6 @@ const AddRow = () => {
     age: "",
   });
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
   const [errors, setErrors] = useState({}); // <-- field-level errors
   const navigate = useNavigate();
 
@@ -23,12 +23,11 @@ const AddRow = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setMessage("");
     setErrors({});
 
     try {
       await addDataRow(form);
-      setMessage("✅ Data added successfully!");
+      toast.success("Data added successfully!");
       setForm({
         name: "",
         email: "",
@@ -47,7 +46,7 @@ const AddRow = () => {
         }, {});
         setErrors(fieldErrors);
       } else {
-        setMessage(err.response?.data?.message || "❌ Something went wrong.");
+        toast.error(err.response?.data?.message || "❌ Something went wrong.");
       }
     } finally {
       setLoading(false);
@@ -60,16 +59,6 @@ const AddRow = () => {
         <h2 className="text-3xl font-bold text-white text-center mb-6">
           Add New Data
         </h2>
-
-        {message && (
-          <div
-            className={`mb-4 text-center text-sm ${
-              message.startsWith("✅") ? "text-green-400" : "text-red-400"
-            }`}
-          >
-            {message}
-          </div>
-        )}
 
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Name */}

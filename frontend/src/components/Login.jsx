@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { login } from "../api/authService";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
   const [errors, setErrors] = useState({}); // field-level errors
   const navigate = useNavigate();
 
@@ -17,24 +17,27 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setMessage("");
     setErrors({});
 
     try {
       const res = await login(form);
-      setMessage("✅ Login successful!");
+
+      // ✅ success
+      toast.success("Login successful 🎉");
       navigate("/dashboard");
     } catch (err) {
       const resErrors = err.response?.data?.errors;
-      if (resErrors && Array.isArray(resErrors)) {
-        // convert backend array to object for per-field errors
+
+      if (resErrors && Array.isArray(resErrors) && resErrors.length > 0) {
+        // ✅ show field-level validation errors, no toast
         const fieldErrors = resErrors.reduce((acc, curr) => {
           acc[curr.field] = curr.message;
           return acc;
         }, {});
         setErrors(fieldErrors);
       } else {
-        setMessage(err.response?.data?.message || "❌ Invalid credentials");
+        // ✅ backend returned only a general error → show toast
+        toast.error(err.response?.data?.message || "❌ Invalid credentials");
       }
     } finally {
       setLoading(false);
@@ -53,16 +56,6 @@ const Login = () => {
         <h2 className="text-3xl font-bold text-white text-center mb-6">
           Welcome Back
         </h2>
-
-        {message && (
-          <div
-            className={`mb-4 text-center text-sm ${
-              message.startsWith("✅") ? "text-green-400" : "text-red-400"
-            }`}
-          >
-            {message}
-          </div>
-        )}
 
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Email */}

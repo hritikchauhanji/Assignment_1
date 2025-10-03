@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getDataRowById, updateDataRow } from "../api/dataService";
+import { toast } from "react-toastify"; // <-- import toast
 
 const EditData = () => {
   const { id } = useParams();
@@ -13,8 +14,7 @@ const EditData = () => {
     age: "",
   });
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
-  const [errors, setErrors] = useState({}); // <-- field-level errors
+  const [errors, setErrors] = useState({}); // field-level errors
 
   // Fetch data by id to pre-fill form
   useEffect(() => {
@@ -30,6 +30,7 @@ const EditData = () => {
         });
       } catch (err) {
         console.error(err);
+        toast.error("❌ Failed to fetch data.");
       }
     };
     fetchData();
@@ -43,12 +44,11 @@ const EditData = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setMessage("");
     setErrors({});
 
     try {
       await updateDataRow(id, form);
-      setMessage("✅ Data updated successfully!");
+      toast.success("Data updated successfully!");
       setTimeout(() => navigate("/dashboard"), 1000);
     } catch (err) {
       const resErrors = err.response?.data?.errors;
@@ -59,7 +59,7 @@ const EditData = () => {
         }, {});
         setErrors(fieldErrors);
       } else {
-        setMessage(err.response?.data?.message || "❌ Something went wrong.");
+        toast.error(err.response?.data?.message || "Something went wrong.");
       }
     } finally {
       setLoading(false);
@@ -72,16 +72,6 @@ const EditData = () => {
         <h2 className="text-3xl font-bold text-white text-center mb-6">
           Edit Data
         </h2>
-
-        {message && (
-          <div
-            className={`mb-4 text-center text-sm ${
-              message.startsWith("✅") ? "text-green-400" : "text-red-400"
-            }`}
-          >
-            {message}
-          </div>
-        )}
 
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Name */}
