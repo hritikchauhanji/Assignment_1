@@ -44,27 +44,40 @@ A full-stack web application built with **React.js**, **Node.js (Express)**, and
 ## 🛠️ Project Structure
 
 ```
-project-root/
-│
-├── backend/
-│ ├── src/
-│ │ ├── index.js # Express app entry
-│ │ ├── config/db.js # Mongo connection
-│ │ ├── models/User.js # Mongoose schema
-│ │ ├── routes/ # Auth + Users routes
-│ │ ├── controllers/ # Business logic
-│ │ └── middlewares/auth.js# JWT middleware
-│ └── package.json
-│
-├── frontend/
-│ ├── src/
-│ │ ├── App.jsx
-│ │ ├── pages/ # Login, Register, Dashboard
-│ │ ├── components/ # UserTable, EditModal, Pagination
-│ │ └── services/api.js # Axios instance
-│ └── package.json
-│
-└── README.md
+/project-root
+├─ backend
+│  ├─ src
+│  │  ├─ controllers (auth.controller.js and data.controller.js)
+│  │  ├─ db  (index.js)
+│  │  ├─ middlewares (auth.middleware.js, error.middleware.js and passport.middleware.js)
+│  │  ├─ model (datarow.model.js and user.model.js)
+│  │  ├─ routers (auth.routes.js and data.routes.js)
+│  │  ├─ utils (ApiError.js, ApiResponse.js and assyncHandler.js)
+│  │  ├─ validators (validate.js)
+│  |  ├─ app.js
+|  |  ├─ contant.js
+|  |  ├─ server.js
+|  ├─ .env
+|  ├─ .env.sample
+|  ├─ .gitignore
+|  ├─ .prettierignore
+|  ├─ .prettierrc
+|  ├─ package-lock.json
+|  ├─ package.json
+|  ├─ vercel.json
+├─ frontend
+│  ├─ src
+│  │  ├─ api (authService.js, axiosInstance.js and dataService.js)
+│  │  ├─ components (Auth, Dashboard, Data)
+│  │  ├─ hooks (useAuth.js)
+│  │  ├─ pages (GoogleSuccess.jsx)
+│  │  ├─ App.jsx
+│  │  ├─ index.css
+│  │  ├─ routes
+│  │  └─ main.jsx
+|  ├─ .env
+└─ README.md
+
 ```
 
 ---
@@ -74,14 +87,16 @@ project-root/
 ### 1. Clone Repo
 
 ```bash
-git clone https://github.com/yourusername/fullstack-assignment.git
-cd fullstack-assignment
+git clone https://github.com/hritikchauhanji/Assignment_1
+cd Assignment_1
 ```
 
 ### 2. Backend Setup
 
+```
 cd backend
 npm install
+```
 
 #### Create a .env file in /backend:
 
