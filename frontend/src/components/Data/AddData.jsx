@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { addDataRow } from "../api/dataService";
+import { addDataRow } from "../../api/dataService";
 import { toast } from "react-toastify"; // <-- import toast
 
 const AddRow = () => {

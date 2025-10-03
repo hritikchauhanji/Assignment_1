@@ -5,16 +5,16 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import Register from "./components/Register";
-import Login from "./components/Login";
-import Dashboard from "./components/Dashboard";
 import PrivateRoute from "./routes/PrivateRoute";
 import PublicRoute from "./routes/PublicRoute";
-import AddRow from "./components/AddData";
-import EditData from "./components/EditData";
 import GoogleSuccess from "./pages/GoogleSuccess";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Dashboard from "./components/Dashboard/Dashboard";
+import Register from "./components/Auth/Register";
+import Login from "./components/Auth/Login";
+import AddRow from "./components/Data/AddData";
+import EditData from "./components/Data/EditData";
 
 function App() {
   return (

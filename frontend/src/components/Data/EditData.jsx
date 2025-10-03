@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getDataRowById, updateDataRow } from "../api/dataService";
+import { getDataRowById, updateDataRow } from "../../api/dataService";
 import { toast } from "react-toastify"; // <-- import toast
 
 const EditData = () => {

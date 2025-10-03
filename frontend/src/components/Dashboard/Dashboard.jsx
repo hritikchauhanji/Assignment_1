@@ -3,9 +3,9 @@ import {
   deleteDataRow,
   bulkDeleteDataRows,
   getDataRowsWithSortingAndPagination,
-} from "../api/dataService";
+} from "../../api/dataService";
 import { useNavigate } from "react-router-dom";
-import { logout } from "../api/authService";
+import { logout } from "../../api/authService";
 import { toast } from "react-toastify"; // <-- import toast
 
 const Dashboard = () => {
