@@ -107,7 +107,6 @@ const loginUser = asyncHandler(async (req, res) => {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-    path: "/",
   };
 
   return res
@@ -143,7 +142,6 @@ const logoutUser = asyncHandler(async (req, res) => {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-    path: "/",
   };
 
   return res
@@ -183,7 +181,6 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-    path: "/",
   };
 
   return res
@@ -214,7 +211,6 @@ const googleCallback = asyncHandler(async (req, res) => {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-    path: "/",
   };
 
   // Save refresh token in DB

@@ -10,8 +10,10 @@ export const useAuth = () => {
       try {
         await axiosInstance.get("/auth/me"); // calls backend
         setIsLoggedIn(true);
+        localStorage.setItem("isLoggedIn", "true");
       } catch (err) {
         setIsLoggedIn(false);
+        localStorage.removeItem("isLoggedIn");
       } finally {
         setLoading(false);
       }
