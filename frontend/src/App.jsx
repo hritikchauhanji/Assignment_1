@@ -12,6 +12,7 @@ import PrivateRoute from "./routes/PrivateRoute";
 import PublicRoute from "./routes/PublicRoute";
 import AddRow from "./components/AddData";
 import EditData from "./components/EditData";
+import GoogleSuccess from "./pages/GoogleSuccess";
 
 function App() {
   return (
@@ -34,6 +35,14 @@ function App() {
           element={
             <PublicRoute>
               <Login />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/google-success"
+          element={
+            <PublicRoute>
+              <GoogleSuccess />
             </PublicRoute>
           }
         />

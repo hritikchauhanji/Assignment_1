@@ -221,7 +221,9 @@ const googleCallback = asyncHandler(async (req, res) => {
   res
     .cookie("accessToken", accessToken, options)
     .cookie("refreshToken", refreshToken, options)
-    .redirect(`${process.env.CORS_ORIGIN}/dashboard`);
+    // .redirect(`${process.env.CORS_ORIGIN}/dashboard`);
+    // Instead of redirecting straight to /dashboard
+    .redirect(`${process.env.CORS_ORIGIN}/google-success`);
 });
 
 const getCurrentUser = asyncHandler(async (req, res) => {
