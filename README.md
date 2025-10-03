@@ -85,6 +85,7 @@ npm install
 
 #### Create a .env file in /backend:
 
+```
 PORT=8000
 MONGODB_URI=mongo-uri
 NODE_ENV=development
@@ -95,16 +96,21 @@ REFRESH_TOKEN_SECRET=refresh-token-secret
 REFRESH_TOKEN_EXPIRY=days
 GOOGLE_CLIENT_ID=client-id
 GOOGLE_CLIENT_SECRET=client-secret
+```
 
 ### Run backend:
 
+```
 npm run dev
+```
 
 ### 3. Frontend Setup:
 
+```
 cd ../frontend
 npm install
 npm start
+```
 
 # 🔑 API Endpoints
 
