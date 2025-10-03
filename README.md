@@ -43,6 +43,7 @@ A full-stack web application built with **React.js**, **Node.js (Express)**, and
 
 ## 🛠️ Project Structure
 
+```
 project-root/
 │
 ├── backend/
@@ -64,6 +65,7 @@ project-root/
 │ └── package.json
 │
 └── README.md
+```
 
 ---
 
